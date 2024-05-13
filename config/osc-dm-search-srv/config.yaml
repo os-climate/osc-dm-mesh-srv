@@ -5,7 +5,7 @@ database:
     collection_name: testcollection
     persist: false
 registrar:
-    host: bgs-dm-registrar-srv
+    host: osc-dm-registrar-srv
     port: 8000
     service: /api/registrar/products
     method: GET

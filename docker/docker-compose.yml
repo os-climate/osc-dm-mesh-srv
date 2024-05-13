@@ -50,10 +50,10 @@ services:
           - localnet
 
     # Data Mesh Proxy
-    bgs-dm-proxy-srv:
-        image: ${DOCKERHUB_USERNAME}/bgs-dm-proxy-srv:latest
-        hostname: bgs-dm-proxy-srv
-        # container_name: bgs-dm-proxy-srv
+    osc-dm-proxy-srv:
+        image: ${DOCKERHUB_USERNAME}/osc-dm-proxy-srv:latest
+        hostname: osc-dm-proxy-srv
+        # container_name: osc-dm-proxy-srv
         ports:
         # OUTSIDE:INSIDE
         # curl http://localhost:${SERVER_PORT}/data
@@ -61,15 +61,15 @@ services:
         environment:
             PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION: "python"
         volumes:
-        - ${PROJECT_DIR}/config/bgs-dm-proxy-srv:/app/config
+        - ${PROJECT_DIR}/config/osc-dm-proxy-srv:/app/config
         networks:
         - localnet
 
     # Data Mesh Registrar
-    bgs-dm-registrar-srv:
-        image: ${DOCKERHUB_USERNAME}/bgs-dm-registrar-srv:latest
-        hostname: bgs-dm-registrar-srv
-        # container_name: bgs-dm-registrar-srv
+    osc-dm-registrar-srv:
+        image: ${DOCKERHUB_USERNAME}/osc-dm-registrar-srv:latest
+        hostname: osc-dm-registrar-srv
+        # container_name: osc-dm-registrar-srv
         ports:
         # OUTSIDE:INSIDE
         # curl http://localhost:${SERVER_PORT}/data
@@ -77,33 +77,33 @@ services:
         environment:
             PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION: "python"
         volumes:
-        - ${PROJECT_DIR}/config/bgs-dm-registrar-srv:/app/config
+        - ${PROJECT_DIR}/config/osc-dm-registrar-srv:/app/config
         networks:
         - localnet
 
     # Data Mesh Marketplace (UX)
-    bgs-dm-marketplace-ux:
-        image: ${DOCKERHUB_USERNAME}/bgs-dm-marketplace-ux:latest
-        hostname: bgs-dm-marketplace-ux
-        # container_name: bgs-dm-marketplace-ux
+    osc-dm-marketplace-ux:
+        image: ${DOCKERHUB_USERNAME}/osc-dm-marketplace-ux:latest
+        hostname: osc-dm-marketplace-ux
+        # container_name: osc-dm-marketplace-ux
         ports:
         # OUTSIDE:INSIDE
         # curl http://localhost:${SERVER_PORT}/data
         - 3000:3000
         volumes:
-        - ${PROJECT_DIR}/config/bgs-dm-marketplace-ux:/app/config
+        - ${PROJECT_DIR}/config/osc-dm-marketplace-ux:/app/config
         networks:
         - localnet
 
-    bgs-dm-search-srv:
-        image: ${DOCKERHUB_USERNAME}/bgs-dm-search-srv:latest
-        hostname: bgs-dm-search-srv
+    osc-dm-search-srv:
+        image: ${DOCKERHUB_USERNAME}/osc-dm-search-srv:latest
+        hostname: osc-dm-search-srv
         ports:
         # OUTSIDE:INSIDE
         - 23000:8000
         volumes:
-        - ${PROJECT_DIR}/config/bgs-dm-search-srv:/app/config
-        - ${PROJECT_DIR}/data/bgs-dm-search-srv:/app/data
+        - ${PROJECT_DIR}/config/osc-dm-search-srv:/app/config
+        - ${PROJECT_DIR}/data/osc-dm-search-srv:/app/data
         environment:
           OPENAI_API_KEY: ${OPENAI_API_KEY}
         networks:
