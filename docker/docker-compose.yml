@@ -1,0 +1,163 @@
+version: '3.8'
+services:
+
+    etcd1:
+        image: quay.io/coreos/etcd:v3.5.0
+        ports:
+        - "2379:2379"
+        - "2380:2380"
+        environment:
+            ETCD_DATA_DIR: /etcd-data
+            ETCD_NAME: etcd-node-1
+            ETCD_INITIAL_CLUSTER: etcd-node-1=http://etcd1:2380,etcd-node-2=http://etcd2:2380,etcd-node-3=http://etcd3:2380
+            ETCD_INITIAL_ADVERTISE_PEER_URLS: http://etcd1:2380
+            ETCD_ADVERTISE_CLIENT_URLS: http://etcd1:2379
+            ETCD_LISTEN_PEER_URLS: http://0.0.0.0:2380
+            ETCD_LISTEN_CLIENT_URLS: http://0.0.0.0:2379
+            ETCD_INITIAL_CLUSTER_STATE: new
+            ETCD_INITIAL_CLUSTER_TOKEN: etcd-cluster-1
+        networks:
+          - localnet
+
+    etcd2:
+        image: quay.io/coreos/etcd:v3.5.0
+        environment:
+            ETCD_DATA_DIR: /etcd-data
+            ETCD_NAME: etcd-node-2
+            ETCD_INITIAL_CLUSTER: etcd-node-1=http://etcd1:2380,etcd-node-2=http://etcd2:2380,etcd-node-3=http://etcd3:2380
+            ETCD_INITIAL_ADVERTISE_PEER_URLS: http://etcd2:2380
+            ETCD_ADVERTISE_CLIENT_URLS: http://etcd2:2379
+            ETCD_LISTEN_PEER_URLS: http://0.0.0.0:2380
+            ETCD_LISTEN_CLIENT_URLS: http://0.0.0.0:2379
+            ETCD_INITIAL_CLUSTER_STATE: new
+            ETCD_INITIAL_CLUSTER_TOKEN: etcd-cluster-1
+        networks:
+          - localnet
+
+    etcd3:
+        image: quay.io/coreos/etcd:v3.5.0
+        environment:
+            ETCD_DATA_DIR: /etcd-data
+            ETCD_NAME: etcd-node-3
+            ETCD_INITIAL_CLUSTER: etcd-node-1=http://etcd1:2380,etcd-node-2=http://etcd2:2380,etcd-node-3=http://etcd3:2380
+            ETCD_INITIAL_ADVERTISE_PEER_URLS: http://etcd3:2380
+            ETCD_ADVERTISE_CLIENT_URLS: http://etcd3:2379
+            ETCD_LISTEN_PEER_URLS: http://0.0.0.0:2380
+            ETCD_LISTEN_CLIENT_URLS: http://0.0.0.0:2379
+            ETCD_INITIAL_CLUSTER_STATE: new
+            ETCD_INITIAL_CLUSTER_TOKEN: etcd-cluster-1
+        networks:
+          - localnet
+
+    # Data Mesh Proxy
+    bgs-dm-proxy-srv:
+        image: ${DOCKERHUB_USERNAME}/bgs-dm-proxy-srv:latest
+        hostname: bgs-dm-proxy-srv
+        # container_name: bgs-dm-proxy-srv
+        ports:
+        # OUTSIDE:INSIDE
+        # curl http://localhost:${SERVER_PORT}/data
+        - 20000:8000
+        environment:
+            PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION: "python"
+        volumes:
+        - ${PROJECT_DIR}/config/bgs-dm-proxy-srv:/app/config
+        networks:
+        - localnet
+
+    # Data Mesh Registrar
+    bgs-dm-registrar-srv:
+        image: ${DOCKERHUB_USERNAME}/bgs-dm-registrar-srv:latest
+        hostname: bgs-dm-registrar-srv
+        # container_name: bgs-dm-registrar-srv
+        ports:
+        # OUTSIDE:INSIDE
+        # curl http://localhost:${SERVER_PORT}/data
+        - 21000:8000
+        environment:
+            PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION: "python"
+        volumes:
+        - ${PROJECT_DIR}/config/bgs-dm-registrar-srv:/app/config
+        networks:
+        - localnet
+
+    # Data Mesh Marketplace (UX)
+    bgs-dm-marketplace-ux:
+        image: ${DOCKERHUB_USERNAME}/bgs-dm-marketplace-ux:latest
+        hostname: bgs-dm-marketplace-ux
+        # container_name: bgs-dm-marketplace-ux
+        ports:
+        # OUTSIDE:INSIDE
+        # curl http://localhost:${SERVER_PORT}/data
+        - 3000:3000
+        volumes:
+        - ${PROJECT_DIR}/config/bgs-dm-marketplace-ux:/app/config
+        networks:
+        - localnet
+
+    bgs-dm-search-srv:
+        image: ${DOCKERHUB_USERNAME}/bgs-dm-search-srv:latest
+        hostname: bgs-dm-search-srv
+        ports:
+        # OUTSIDE:INSIDE
+        - 23000:8000
+        volumes:
+        - ${PROJECT_DIR}/config/bgs-dm-search-srv:/app/config
+        - ${PROJECT_DIR}/data/bgs-dm-search-srv:/app/data
+        environment:
+          OPENAI_API_KEY: ${OPENAI_API_KEY}
+        networks:
+        - localnet
+
+    # Geospatial Data Mesh
+    # bgs-geo-h3grid-srv:
+    #      image: ${DOCKERHUB_USERNAME}/bgs-geo-h3grid-srv:latest
+    #      hostname: bgs-geo-h3grid-srv
+    #      # container_name: bgs-geo-h3grid-srv
+    #      ports:
+    #      # OUTSIDE:INSIDE
+    #      # curl http://localhost:${SERVER_PORT}/data
+    #      - 30000:8000
+    #      volumes:
+    #      - ${PROJECT_DIR}/config/bgs-geo-h3grid-srv:/app/config
+    #      - ${PROJECT_DIR}/database/bgs-geo-h3grid-srv:/app/databases
+    #      - ${PROJECT_DIR}/data/bgs-geo-h3grid-srv:/app/data
+    #      networks:
+    #      - localnet
+
+
+    # Geospatial Data Product (Temperature)
+    # bgsdp-giss-temperature:
+    #     image: ${DOCKERHUB_USERNAME}/bgsdp-giss-temperature:latest
+    #     # hostname: bgsdp-giss-temperature
+    #     # container_name: bgsdp-giss-temperature
+    #     ports:
+    #     # OUTSIDE:INSIDE
+    #     # curl http://localhost:${SERVER_PORT}/data
+    #     - 31000:8001
+    #     volumes:
+    #     - ${PROJECT_DIR}/config:/app/config
+    #     - ${PROJECT_DIR}/data:/app/data
+    #     networks:
+    #     - localnet
+
+    # # Geospatial Data Product (Temperature) UX
+    # bgsdp-giss-temperature-ux:
+    #     image: ${DOCKERHUB_USERNAME}/bgsdp-giss-temperature-ux:latest
+    #     # hostname: bgsdp-giss-temperature-ux
+    #     # container_name: bgsdp-giss-temperature-ux
+    #     ports:
+    #     # OUTSIDE:INSIDE
+    #     # curl http://localhost:${SERVER_PORT}/data
+    #     - 32000:3000
+    #     # volumes:
+    #     # - ${PROJECT_DIR}/config:/app/config
+    #     # - ${PROJECT_DIR}/data:/app/data
+    #     environment:
+    #     - SERVER_URL=http://temperature:8001
+    #     networks:
+    #     - localnet
+
+networks:
+    localnet:
+        external: true
