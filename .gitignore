@@ -1,0 +1,6 @@
+# Local temp directory
+output.txt
+tmp/
+data/
+database/
+.idea

@@ -17,11 +17,15 @@ routes:
   # REGISTRAR
   #####
 
-  # Example: /api/registrar/carts
-  # Example: /api/registrar/carts/uuid/{uuid}
-  # Example: /api/registrar/carts/uuid/{uuid}/{product_uuid}/{artifact_uuid}
   - source: "/api/registrar/.*"
     target: "http://osc-dm-registrar-srv:8000"
+
+  #####
+  # MONITOR
+  #####
+
+  - source: "/api/monitor/.*"
+    target: "http://osc-dm-monitor-srv:8000"
 
   #####
   # SEARCH
@@ -33,9 +37,6 @@ routes:
   # PRODUCT INSTANCES (requests routed to local data products)
   #####
 
-  # Example: /api/dataproducts/uuid/{uuid}
-  # Example: /api/dataproducts/uuid/{uuid}/artifacts
-  # Example: /api/dataproducts/uuid/{uuid}/artifacts/{artifact_uuid}
   - source: "/api/dataproducts/.*"
     target: "dataproduct_resolver"
 
