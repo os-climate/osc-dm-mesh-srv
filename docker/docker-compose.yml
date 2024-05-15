@@ -49,7 +49,6 @@ services:
         networks:
           - localnet
 
-    # Data Mesh Proxy
     osc-dm-proxy-srv:
         image: ${DOCKERHUB_USERNAME}/osc-dm-proxy-srv:latest
         hostname: osc-dm-proxy-srv
@@ -65,7 +64,6 @@ services:
         networks:
         - localnet
 
-    # Data Mesh Registrar
     osc-dm-registrar-srv:
         image: ${DOCKERHUB_USERNAME}/osc-dm-registrar-srv:latest
         hostname: osc-dm-registrar-srv
@@ -81,17 +79,17 @@ services:
         networks:
         - localnet
 
-    # Data Mesh Marketplace (UX)
-    osc-dm-marketplace-ux:
-        image: ${DOCKERHUB_USERNAME}/osc-dm-marketplace-ux:latest
-        hostname: osc-dm-marketplace-ux
-        # container_name: osc-dm-marketplace-ux
+    osc-dm-monitor-srv:
+        image: ${DOCKERHUB_USERNAME}/osc-dm-monitor-srv:latest
+        hostname: osc-dm-monitor-srv
         ports:
         # OUTSIDE:INSIDE
-        # curl http://localhost:${SERVER_PORT}/data
-        - 3000:3000
+        - 22000:8000
         volumes:
-        - ${PROJECT_DIR}/config/osc-dm-marketplace-ux:/app/config
+        - ${PROJECT_DIR}/config/osc-dm-monitor-srv:/app/config
+        - ${PROJECT_DIR}/data/osc-dm-monitor-srv:/app/data
+        environment:
+          OPENAI_API_KEY: ${OPENAI_API_KEY}
         networks:
         - localnet
 
@@ -106,6 +104,19 @@ services:
         - ${PROJECT_DIR}/data/osc-dm-search-srv:/app/data
         environment:
           OPENAI_API_KEY: ${OPENAI_API_KEY}
+        networks:
+        - localnet
+
+    osc-dm-marketplace-ux:
+        image: ${DOCKERHUB_USERNAME}/osc-dm-marketplace-ux:latest
+        hostname: osc-dm-marketplace-ux
+        # container_name: osc-dm-marketplace-ux
+        ports:
+        # OUTSIDE:INSIDE
+        # curl http://localhost:${SERVER_PORT}/data
+        - 3000:3000
+        volumes:
+        - ${PROJECT_DIR}/config/osc-dm-marketplace-ux:/app/config
         networks:
         - localnet
 
